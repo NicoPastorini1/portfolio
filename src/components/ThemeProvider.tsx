@@ -11,10 +11,11 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+const THEME_KEY = "portfolio-theme-v2";
+
 function getThemeFromStorage(): Theme {
-  if (typeof window === "undefined") return "light";
-  return (localStorage.getItem("portfolio-theme") as Theme) || 
-    (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  if (typeof window === "undefined") return "dark";
+  return localStorage.getItem(THEME_KEY) === "light" ? "light" : "dark";
 }
 
 const themeStore = {
@@ -27,7 +28,7 @@ const themeStore = {
     };
   },
   getSnapshot: () => getThemeFromStorage(),
-  getServerSnapshot: () => "light" as Theme,
+  getServerSnapshot: () => "dark" as Theme,
 };
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
@@ -41,7 +42,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
-    localStorage.setItem("portfolio-theme", newTheme);
+    localStorage.setItem(THEME_KEY, newTheme);
     window.dispatchEvent(new Event("theme-change"));
     forceRender((n) => n + 1);
   };

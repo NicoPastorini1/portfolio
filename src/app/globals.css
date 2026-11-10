@@ -2,19 +2,221 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-panel: var(--panel);
+  --color-panel2: var(--panel2);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent2: var(--accent2);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
 
-:root.dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+/* Dark is the default: a deep, quiet night palette. */
+:root {
+  --canvas: #080c12;
+  --panel: #0e1621;
+  --panel2: #141f2c;
+  --line: #223141;
+  --ink: #e4ebf3;
+  --muted: #8ea1b6;
+  --accent: #8fb8d6;
+  --accent2: #a8a6d8;
+  --glow: 143 184 214;
+  color-scheme: dark;
+}
+
+:root.light {
+  --canvas: #f3f6fa;
+  --panel: #ffffff;
+  --panel2: #eef2f8;
+  --line: #d7e0ea;
+  --ink: #0f172a;
+  --muted: #566579;
+  --accent: #3f6f96;
+  --accent2: #6f639e;
+  --glow: 63 111 150;
+  color-scheme: light;
+}
+
+* {
+  border-color: var(--line);
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  background-color: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  background-image:
+    radial-gradient(56rem 56rem at 12% -8%, rgb(var(--glow) / 0.14), transparent 60%),
+    radial-gradient(48rem 48rem at 92% 4%, color-mix(in srgb, var(--accent2) 12%, transparent), transparent 62%);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 35%, transparent);
+  color: var(--ink);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--canvas);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 999px;
+  border: 2px solid var(--canvas);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--accent) 55%, var(--line));
+}
+
+/* Layered grid + drifting light orbs (background decoration). */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, var(--line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+  background-size: 64px 64px;
+  opacity: 0.14;
+  mask-image: radial-gradient(ellipse at center, #000 10%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 10%, transparent 75%);
+}
+
+.orb {
+  border-radius: 9999px;
+  filter: blur(120px);
+  will-change: transform;
+}
+.orb-primary {
+  background: rgb(var(--glow) / 0.16);
+  animation: drift 20s ease-in-out infinite alternate;
+}
+.orb-secondary {
+  background: color-mix(in srgb, var(--accent2) 16%, transparent);
+  animation: drift 26s ease-in-out infinite alternate-reverse;
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Animated gradient text for the name / headings */
+.text-gradient {
+  background-image: linear-gradient(
+    100deg,
+    var(--ink) 0%,
+    var(--accent) 38%,
+    var(--accent2) 58%,
+    var(--ink) 100%
+  );
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 9s linear infinite;
+}
+
+/* Thin technology marquee */
+.marquee-mask {
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+.animate-marquee {
+  animation: marquee 32s linear infinite;
+}
+.marquee-mask:hover .animate-marquee {
+  animation-play-state: paused;
+}
+
+.animate-float {
+  animation: float 7s ease-in-out infinite;
+}
+.animate-pulse-glow {
+  animation: pulseGlow 2.6s ease-in-out infinite;
+}
+.animate-spin-slow {
+  animation: spin 24s linear infinite;
+}
+
+@keyframes drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(4%, 6%, 0) scale(1.08);
+  }
+  100% {
+    transform: translate3d(-3%, -4%, 0) scale(0.96);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes shimmer {
+  to {
+    background-position: 220% center;
+  }
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes pulseGlow {
+  0%,
+  100% {
+    opacity: 0.55;
+    box-shadow: 0 0 0 0 rgb(var(--glow) / 0.4);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 0 6px rgb(var(--glow) / 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
 }

@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import {
   ArrowUpRight,
+  Bot,
   Briefcase,
   Cloud,
   Database,
@@ -20,17 +20,9 @@ import {
   Wrench,
   type LucideIcon,
 } from "lucide-react";
+import { FloatingNav, navSections, useActiveSection } from "@/components/FloatingNav";
 import { Reveal } from "@/components/Reveal";
 import { ThemeToggle } from "@/components/ThemeToggle";
-
-const navItems = [
-  { id: "perfil", label: "Perfil" },
-  { id: "experiencia", label: "Experiencia" },
-  { id: "skills", label: "Skills" },
-  { id: "proyectos", label: "Proyectos" },
-  { id: "educacion", label: "Educación" },
-  { id: "contacto", label: "Contacto" },
-];
 
 const stats = [
   { value: "5+", label: "años de experiencia" },
@@ -158,6 +150,20 @@ const skillGroups: {
     icon: Wrench,
     items: ["Power Automate", "Google Apps Script", "D3.js", "pbiviz"],
   },
+  {
+    title: "IA y agentes",
+    icon: Bot,
+    items: [
+      "Claude Code",
+      "Claude Desktop",
+      "Agentes IA",
+      "RAG",
+      "MCP",
+      "Prompt engineering",
+      "GitHub Copilot",
+      "Cursor",
+    ],
+  },
 ];
 
 const projects = [
@@ -268,28 +274,7 @@ function SectionHeading({
 }
 
 export default function Home() {
-  const [active, setActive] = useState("perfil");
-
-  useEffect(() => {
-    const observers: IntersectionObserver[] = [];
-
-    navItems.forEach(({ id }) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) setActive(id);
-        },
-        { rootMargin: "-45% 0px -50% 0px", threshold: 0 }
-      );
-
-      observer.observe(el);
-      observers.push(observer);
-    });
-
-    return () => observers.forEach((observer) => observer.disconnect());
-  }, []);
+  const active = useActiveSection();
 
   return (
     <div className="relative min-h-screen overflow-x-hidden">
@@ -310,25 +295,35 @@ export default function Home() {
             </span>
           </a>
 
-          <div className="hidden items-center gap-1 md:flex">
-            {navItems.map((item) => (
-              <a
-                key={item.id}
-                href={`#${item.id}`}
-                className={`rounded-full px-3 py-1.5 text-sm transition-colors ${
-                  active === item.id
-                    ? "bg-accent/15 text-accent"
-                    : "text-muted hover:text-ink"
-                }`}
-              >
-                {item.label}
-              </a>
-            ))}
-          </div>
+          <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
+            <div
+              className={`flex min-w-0 items-center gap-0.5 overflow-x-auto transition-[opacity,visibility] duration-300 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
+                active === "perfil"
+                  ? "xl:visible xl:opacity-100"
+                  : "xl:invisible xl:pointer-events-none xl:opacity-0"
+              }`}
+            >
+              {navSections.map(({ id, label }) => (
+                <a
+                  key={id}
+                  href={`#${id}`}
+                  className={`shrink-0 rounded-full px-2.5 py-1.5 text-xs transition-colors ${
+                    active === id
+                      ? "bg-accent/15 text-accent"
+                      : "text-muted hover:text-ink"
+                  }`}
+                >
+                  {label}
+                </a>
+              ))}
+            </div>
 
-          <ThemeToggle />
+            <ThemeToggle />
+          </div>
         </div>
       </nav>
+
+      <FloatingNav />
 
       <main>
         <section id="perfil" className="scroll-mt-28 mx-auto max-w-6xl px-6 pb-20 pt-16 sm:pt-24">
